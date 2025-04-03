@@ -1,0 +1,42 @@
+<mvc:View controllerName="com.grilo.classification.com.grilo.classification.controller.Detail"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns:core="sap.ui.core"
+    xmlns="sap.m">
+    <Page id="detailPage" title="{i18n>title}">
+    <!-- <Panel id="mainPanel" title="test"> -->
+        <VBox id="detailInputHbox" class="sapUiMediumMargin" justifyContent="Start" alignItems="Start" >
+                <Label id="detailObjectLabel" text="Object" class="sapUiSmallMargin"/>
+                <Input id="detailObjectInput" value="{object}" enabled="false"/>
+                <Label id="detailObjectTypeLabel" text="Object Type" class="sapUiSmallMargin"/>
+                <Input id="detailObjectTypeInput" value="{classType}" enabled="false"/>
+        <HBox id="detailClassComboBox">
+            <Label id="detailClassLabel" text="Class" class="sapUiSmallMargin"/>
+            <Select id="detailClassSelect" items="{classes}" change="onSelectedClass" forceSelection="false">
+                <items>
+                    <core:Item id="classItem" key="{class}" text="{class} - {classDesc}"></core:Item>
+                </items>
+            </Select>
+        </HBox>
+        </VBox>
+
+        <Table id="classTable" >
+            <columns>
+               <Column id="recordIdCol">
+                    <Text id="recordIdColText" text="{i18n>charId}"></Text>
+                </Column>
+                <Column id="processUnitCol">
+                    <Text id="processUnitColText" text="{i18n>charValue}"></Text>
+                </Column>
+                <Column id="processUnitDescCol">
+                    <Text id="processUnitDescColText" text="{i18n>charUom}"></Text>
+                </Column>
+                <Column id="changeCharValue">
+                    <Text id="changeCharText" text="{i18n>changeChar}"></Text>
+                </Column>
+            </columns>
+
+        </Table>
+
+    <!-- </Panel> -->
+    </Page>
+</mvc:View>

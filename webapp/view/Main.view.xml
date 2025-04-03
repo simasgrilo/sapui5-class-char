@@ -1,0 +1,20 @@
+<mvc:View controllerName="com.grilo.classification.com.grilo.classification.controller.Main"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m">
+    <Page id="page" title="{i18n>title}">
+    <!-- <Panel id="mainPanel" title="test"> -->
+        <VBox id="mainInputHbox" class="sapUiMediumMargin" justifyContent="Center" alignItems="Start">
+            <Label id="objectLabel" text="Object" class="sapUiSmallMargin"/>
+            <Input id="objectInput"/>
+            <Label id="objectTypeLabel" text="Object Type" class="sapUiSmallMargin"/>
+            <Input id="objectTypeInput" maxLength="3"/>
+        </VBox>
+    <!-- </Panel> -->
+    <footer>
+        <Toolbar id="mainFooterToolbar">
+            <ToolbarSpacer id="useless"/>
+            <Button id="enterButton" text="Enter" press="onEnterButtonPressed"/>
+        </Toolbar>
+    </footer>
+    </Page>
+</mvc:View>

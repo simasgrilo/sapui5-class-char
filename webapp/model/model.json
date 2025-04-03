@@ -1,0 +1,49 @@
+{
+    "objects" : [
+        {
+            "object" : "12345",
+            "classType" : "002",
+            "classTypeDesc": "Equipment",
+            "classes" : [
+                {
+                    "class" : "TML",
+                    "classDesc": "Thickness Measurement",
+                    "chars" : [
+                        {
+                            "charId" : "ESPESSURA",
+                            "charValue" : 453,
+                            "charUom": "mm"
+                        },
+                        {
+                            "charId" : "Vida útil",
+                            "charValue" : 10,
+                            "charUom": "Anos"
+                        }
+                    ]
+                },
+                {
+                    "class" : "PRV",
+                    "classDesc": "Inspeção PRV",
+                    "chars" : [
+                        {
+                            "charId" : "Largura",
+                            "charValue" : 453,
+                            "charUom": "mm"
+                        },
+                        {
+                            "charId" : "Vibração",
+                            "charValue" : 30,
+                            "charUom": "mm/s"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+
+        },
+        {
+
+        }
+    ]
+}

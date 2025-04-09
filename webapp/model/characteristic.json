@@ -1,0 +1,28 @@
+{
+    "charModel" : [
+        {
+            "char" : "temperatura",
+            "data" : {
+                "uom" : "ºC",
+                "domain": "number",
+                "maxValue" : 4
+            }
+        },
+        {
+            "char" : "Fator de segurança",
+            "data" : {
+                "uom" : "",
+                "domain": "number",
+                "maxValue" : 1
+            }
+        },
+        {
+            "char" : "Corrente Elétrica",
+            "data" : {
+                "uom" : "A",
+                "domain": "number",
+                "maxValue" : 6
+            }
+        }
+    ]
+}

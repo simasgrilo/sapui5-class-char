@@ -1,0 +1,35 @@
+{
+    "Objects": [
+        {
+            "ID": "334900",
+            "Description" : "material bobina 20290i4k",
+            "ClassType": "001"
+        },
+        {
+            "ID": "12345",
+            "Description": "Bomba xj2209-222",
+            "ClassType": "002"
+        },
+        {
+            "ID": "12346",
+            "Description": "Medidor PLC AA9-292923",
+            "ClassType": "002"
+        },
+        {
+            "ID": "334315",
+            "Description": "Oleo 40L - 20L (Gallon)",
+            "ClassType": "001"
+        },
+        {
+            "ID": "BA01-ADL-XX-01",
+            "Description": "Linha ADL 01 - Norte",
+            "ClassType": "003"
+        },
+        {
+            "ID": "BA01-ADL-XX-02",
+            "Description": "Linha ADL 02 - Leste",
+            "ClassType": "003"
+        }
+
+    ]
+}

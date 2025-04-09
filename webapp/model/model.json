@@ -36,11 +36,68 @@
                             "charUom": "mm/s"
                         }
                     ]
+                },
+                {
+                    "class" : "NR13",
+                    "classDesc": "Norma Regulamentadora No. 13",
+                    "chars" : [
+                        {
+                            "charId" : "Tipo equipamento",
+                            "charValue" : "Vaso de pressão",
+                            "charUom": ""
+                        },
+                        {
+                            "charId" : "Grupo de Risco",
+                            "charValue" : "Grupo 2",
+                            "charUom": ""
+                        },
+                        {
+                            "charId" : "Classe",
+                            "charValue" : "B",
+                            "charUom": ""                           
+                        }
+                    ]
                 }
             ]
         },
         {
-
+            "object" : "12346",
+            "classType" : "002",
+            "classTypeDesc": "Equipment",
+            "classes" : [
+                {
+                    "class" : "TML",
+                    "classDesc": "Thickness Measurement",
+                    "chars" : [
+                        {
+                            "charId" : "ESPESSURA",
+                            "charValue" : 453,
+                            "charUom": "mm"
+                        },
+                        {
+                            "charId" : "Vida útil",
+                            "charValue" : 10,
+                            "charUom": "Anos"
+                        }
+                    ]
+                },
+                {
+                    "class" : "PRV",
+                    "classDesc": "Inspeção PRV",
+                    "chars" : [
+                        {
+                            "charId" : "Largura",
+                            "charValue" : 453,
+                            "charUom": "mm"
+                        },
+                        {
+                            "charId" : "Vibração",
+                            "charValue" : 30,
+                            "charUom": "mm/s"
+                        }
+                    ]
+                }
+            ]
         },
         {
 

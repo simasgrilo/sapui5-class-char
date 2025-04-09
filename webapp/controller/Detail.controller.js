@@ -1,9 +1,10 @@
 sap.ui.define([
     "sap/ui/core/mvc/Controller",
     "sap/m/ColumnListItem",
-    "sap/m/Text",
-    "sap/m/Button"
-], function(Controller, ColumnListItem, Text, Button) {
+    "sap/m/Input",
+    "sap/m/Button",
+    "sap/m/MessageToast"
+], function(Controller, ColumnListItem, Input, Button) {
     "use strict";
     return Controller.extend("com.grilo.classification.com.grilo.classification.controller.Detail", {
         onInit: function(){
@@ -23,11 +24,8 @@ sap.ui.define([
         },
 
         onSelectedClass : function(oEvent) {
-            console.log("selected item");
             let sClass = oEvent.getParameter("selectedItem").getProperty("key");
             let oTable = this.getView().byId("classTable");
-            // let sBindingContext = `${this.getView().byId("detailClassSelect").getBindingContext().getPath()}/classes/`;
-            //TODO: find the remainder of the binding path that should be classes/<pos>/chars. <pos> needs to be calculated from the array of classes.
             let oModel = this.getView().getModel()
             let oModelData = oModel.getProperty(this.getView().getBindingContext().getPath())["classes"]
             let iPos = this._getPosOfClass(oModelData, sClass);
@@ -42,28 +40,148 @@ sap.ui.define([
                 path: sBindingContextPath,
                 template : new ColumnListItem({
                     cells : [
-                                new Text({
-                                    text: "{charId}"
+                                new Input({
+                                    value: "{charId}",
+                                    editable: false,
+                                    valueHelpRequest : this._onCharacteristicValueRequest
                                 }),
-                                new Text({
-                                    text: "{charValue}"
+                                new Input({
+                                    value: "{charValue}",
+                                    editable: true
                                 }),
-                                new Text({
-                                    text: "{charUom}"
+                                new Input({
+                                    value: "{charUom}",
+                                    editable: false
                                 }),
-                                new Button({
-                                    icon: "sap-icon://user-edit",
-                                    press: that.onChangePress
-                                })
+                                // new Button({
+                                //     icon: "sap-icon://user-edit",
+                                //     press: that.onChangePress
+                                // })
                             ]
                 })
             });
+            //as soon as an entry is selected, the user can then create new entries or save them.
+            let oClass = this.getView().byId("detailClassSelect").getSelectedItem()//getSelectedKey("")
+            if (oClass) {
+                this.getView().byId("addCharData").setEnabled(true);
+                this.getView().byId("saveCharData").setEnabled(true);
+            }
+        
         },
         _getPosOfClass : function(oModelData, sClass) {
             return oModelData.findIndex((oClass) => //works like Python lambda... this is a testing function, not your regular arrow function
                 oClass["class"] === sClass
             );
-        }
+        },
+
+        _onCharacteristicValueRequest : function() {
+            /**
+             * sets the characteristic value help for the characteristic field.
+             */
+        },
+        
+        _changedCell : null, 
+
+        // onChangePress: function(oEvent) {
+        //     /**
+        //      * Gets the current row of the table to allow the user to change it
+        //      * Considers the id of the parent of the button (the cell) as the selected row.
+        //      * 
+        //      */
+        //     // let aIdSplit = oEvent.getSource().getParent().getId().split("-");
+        //     // let iId = Number(aIdSplit[aIdSplit.length - 1]);
+        //     // let aSelectedRowCells = oEvent.getSource().getParent()
+        //     let oCharValue = oEvent.getSource().getParent().getCells()[1];
+        //     this._changedCell = oCharValue;
+        //     oCharValue.setEditable(!oCharValue.getEditable());
+        //     //TODO: make this changeable for the cell that was changed. only once at a time or massive change, also.
+        //     console.log(oEvent);
+        // },
+
+        onAddRow : function(oEvent) {
+            /**
+             * Adds a row to the table of characteristics. This makes the app enter in a state of "Adding". I should be able to remove this newly
+             * entered row while the entry was not commited (i.e, saved) yet).
+             * For simplicity and for now, forces that only one char can be created at a time
+             */
+            let oTable = this.getView().byId("classTable");
+            this._enterAddCharState(oTable);
+        },
+
+        _enterAddCharState: function(oTable) {
+            /**
+             * Add state: only one row at a time can be added. This state adds a new button to remove the current row and revert back to the changing state.
+             * While adding a characteristic, the other ones would not be changed. Of course this is not mandatory, because we could just sent the
+             * screen data back to the backend to update the characteristics, but i think this is suboptimal
+            */
+            oTable.getItems().forEach((row) => {
+                let oCharValueInput = row.getCells()[1]; 
+                oCharValueInput.setEnabled(!oCharValueInput.getEnabled());
+            });
+
+            let oToolbar = oTable.getHeaderToolbar();
+            if (!oToolbar){
+                MessageBox.show("Internal Error. Please contact the system administrator", {
+                    icon: MessageBox.Icon.ERROR,
+                    title: "Error",
+                    actions: MessageBox.Action.Close,
+                });
+                return;
+            }
+            let oUndoButton = new Button({
+                icon: "sap-icon://undo",
+                press: this._onUndoPressed
+            });
+            oToolbar.addContent(oUndoButton);
+            this.getView().byId("addCharData").setEnabled(false);
+            this._addCells(oTable);
+        },
+
+        _addCells : function(oTable) {
+            let oItem = new ColumnListItem({
+                cells:[
+                    new Input({
+                        value: "{charId}",
+                        editable: true
+                    }),
+                    new Input({
+                        value: "{charValue}",
+                        editable: true
+                    }),
+                    new Input({
+                        value: "{charUom}",
+                        editable: false
+                    }),
+                ]
+            });
+            oTable.addItem(oItem);
+        },
+
+        _onUndoPressed : function(oEvent) {
+            console.log("undo pressed");
+        },
+
+        onSavePressed : function(oEvent) {
+            /**
+             * This event will trigger the oData request to save the new characteristic in the backend.
+             * As a mockup, it only adds to the current table 
+             */
+            // in a real world scenario, this wil lbe implemented in the callback request to the odata service
+            // re-enable the other rows before adding the new one, otherwise the last one will be in a different state.
+            let oTable = this.getView().byId("classTable");
+            let oTableItems = oTable.getItems()
+            oTableItems.forEach((row) => {
+                let oCharValueInput = row.getCells()[1]; 
+                oCharValueInput.setEnabled(!oCharValueInput.getEnabled());
+            });
+            let oRows = oTable.getBinding("items");
+            let oNewData = oRows[oRows.length - 1];
+            
+            let oContext = oRows.getPath();
+            let aData = this.getView().getModel().getProperty(oContext);
+            aData.push(oNewData);
+
+        },
 
     });
 })

@@ -1,13 +1,38 @@
-<mvc:View controllerName="com.grilo.classification.com.grilo.classification.controller.Main"
+<mvc:View xmlns:core="sap.ui.core" controllerName="com.grilo.classification.com.grilo.classification.controller.Main"
     xmlns:mvc="sap.ui.core.mvc"
     xmlns="sap.m">
     <Page id="page" title="{i18n>title}">
     <!-- <Panel id="mainPanel" title="test"> -->
-        <VBox id="mainInputHbox" class="sapUiMediumMargin" justifyContent="Center" alignItems="Start">
-            <Label id="objectLabel" text="Object" class="sapUiSmallMargin"/>
-            <Input id="objectInput"/>
-            <Label id="objectTypeLabel" text="Object Type" class="sapUiSmallMargin"/>
-            <Input id="objectTypeInput" maxLength="3"/>
+        <VBox id="mainInputHbox" class="sapUiMediumMargin" justifyContent="Start" alignItems="Start">
+            <Label id="objectLabel" text="Object" class="sapUiSmallMarginTop"/>
+            <Input id="objectInput" 
+                   showValueHelp="true"
+                   showSuggestion="true"
+                   valueHelpRequest="onEquipmentValueHelpPressed"
+                   suggestionItems="{Objects>/Objects}"
+                   class="sapUiSmallMarginBottom">
+                   <suggestionItems>
+                        <core:ListItem id="suggestionObject" text="{Objects>ID}" additionalText="{Objects>Description}"></core:ListItem>
+                   </suggestionItems>
+            </Input>
+            <Label id="objectTypeLabel" text="Object Type" class="sapUiSmallMarginTop"/>
+            <!-- <Input id="objectTypeInput" 
+                   maxLength="3" 
+                   showValueHelp="true"
+                   showSuggestion="true"
+                   suggestionItems="{ClassType>/classTypes}">
+                   <suggestionItems>
+                        <core:ListItem id="suggestionClassType" text="{ClassType>ID}" additionalText="{ClassType>Description}"></core:ListItem>
+                   </suggestionItems>
+            </Input> ERICK:09/04/2025 - changed input for select -->
+            <Select id="objectTypeSelect" 
+                    items="{ClassType>/classTypes}" 
+                    forceSelection="false" 
+                    change="onSuggestObject">
+                <items>
+                    <core:Item id="objectTypeItem" key="{class}" text="{ClassType>ID} - {ClassType>Description}"></core:Item>
+                </items>
+            </Select>
         </VBox>
     <!-- </Panel> -->
     <footer>

@@ -2,50 +2,56 @@
     xmlns:mvc="sap.ui.core.mvc"
     xmlns:core="sap.ui.core"
     xmlns="sap.m">
-    <Page id="detailPage" title="{i18n>title}">
-    <!-- <Panel id="mainPanel" title="test"> -->
-        <VBox id="detailInputHbox" class="sapUiMediumMargin" justifyContent="Start" alignItems="Start" >
-                <Label id="detailObjectLabel" text="Object" />
-                <Input id="detailObjectInput" value="{object}" enabled="false" class="sapUiSmallMarginTop"/>
-                <Label id="detailObjectTypeLabel" text="Object Type"/>
-                <Input id="detailObjectTypeInput" value="{classType}" enabled="false" class="sapUiSmallMarginTop"/>
-        <HBox id="detailClassComboBox" justifyContent="Start" alignItems="Center">
-            <Label id="detailClassLabel" text="Class" class="sapUiSmallMargin"/>
-            <Select id="detailClassSelect" items="{classes}" change="onSelectedClass" forceSelection="false">
-                <items>
-                    <core:Item id="classItem" key="{class}" text="{class} - {classDesc}"></core:Item>
-                </items>
-            </Select>
-            <Button id="addClass" icon="sap-icon://add" class="sapUiSmallMargin"></Button>
-        </HBox>
-        </VBox>
+    <Page id="detailPage" showHeader="false">
+        <Panel id="detailPanel" expand="true" headerText="{i18n>classChar}" >
+            <VBox id="detailInputHbox" class="sapUiMediumMargin" justifyContent="Start" alignItems="Start" >
+                    <Label id="detailObjectLabel" text="Object" class="sapUiSmallMarginTop" />
+                    <Input id="detailObjectInput" value="{object}" enabled="false" class="sapUiSmallMarginBottom"/>
+                    <Label id="detailObjectTypeLabel" text="Object Type" class="sapUiSmallMarginTop"/>
+                    <Input id="detailObjectTypeInput" value="{classType}" enabled="false" />
+            <HBox id="detailClassComboBox" justifyContent="Start" alignItems="Center">
+                <VBox id="detailInputComboBox" justifyContent="Start" alignItems="Stretch">
+                <Label id="detailClassLabel" text="Class" class="sapUiSmallMarginTop"/>
+                <HBox id="detailClassWithButton" justifyContent="Start" alignItems="Center">
+                <Select id="detailClassSelect" 
+                        items="{classes}" 
+                        change="onSelectedClass" 
+                        forceSelection="false">
+                    <items>
+                        <core:Item id="classItem" key="{class}" text="{class} - {classDesc}"></core:Item>
+                    </items>
+                </Select>
+                <Button id="addClass" icon="sap-icon://add" class="sapUiSmallMargin"></Button>
+                </HBox>
+                </VBox>
+            </HBox>
+            </VBox>
 
-        <Table id="classTable" >
-            <headerToolbar>
-                <OverflowToolbar id="classToolbar" >
-                    <ToolbarSpacer id="test"/>
-                    <SearchField id="searchClass" width="200px"></SearchField>
-                    <Button id="addCharData" icon="sap-icon://add" press="onAddRow" enabled="false"></Button>
-                    <Button id="saveCharData" icon="sap-icon://save" press="onSavePressed" enabled="false"></Button>
-                </OverflowToolbar>
-            </headerToolbar>
-            <columns>
-               <Column id="recordIdCol">
-                    <Text id="recordIdColText" text="{i18n>charId}"></Text>
-                </Column>
-                <Column id="processUnitCol">
-                    <Text id="processUnitColText" text="{i18n>charValue}"></Text>
-                </Column>
-                <Column id="processUnitDescCol">
-                    <Text id="processUnitDescColText" text="{i18n>charUom}"></Text>
-                </Column>
-                <!-- <Column id="changeCharValue">
-                    <Text id="changeCharText" text="{i18n>changeChar}"></Text>
-                </Column> -->
-            </columns>
+            <Table id="classTable" >
+                <headerToolbar>
+                    <OverflowToolbar id="classToolbar" >
+                        <ToolbarSpacer id="test"/>
+                        <SearchField id="searchClass" width="200px"></SearchField>
+                        <Button id="addCharData" icon="sap-icon://add" press="onAddRow" enabled="false"></Button>
+                        <Button id="saveCharData" icon="sap-icon://save" press="onSavePressed" enabled="false"></Button>
+                    </OverflowToolbar>
+                </headerToolbar>
+                <columns>
+                <Column id="recordIdCol">
+                        <Text id="recordIdColText" text="{i18n>charId}"></Text>
+                    </Column>
+                    <Column id="processUnitCol">
+                        <Text id="processUnitColText" text="{i18n>charValue}"></Text>
+                    </Column>
+                    <Column id="processUnitDescCol">
+                        <Text id="processUnitDescColText" text="{i18n>charUom}"></Text>
+                    </Column>
+                    <!-- <Column id="changeCharValue">
+                        <Text id="changeCharText" text="{i18n>changeChar}"></Text>
+                    </Column> -->
+                </columns>
 
-        </Table>
-
-    <!-- </Panel> -->
+            </Table>
+    </Panel>
     </Page>
 </mvc:View>

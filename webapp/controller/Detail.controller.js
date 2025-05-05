@@ -11,6 +11,7 @@ sap.ui.define([
             console.log("route matched");
             let oRouter = this.getOwnerComponent().getRouter();
             oRouter.attachRoutePatternMatched(this._onRouteMatched, this);
+            this._newRowVisible = false;
         },
 
         _onRouteMatched : function(oEvent) {
@@ -118,22 +119,11 @@ sap.ui.define([
                 let oCharValueInput = row.getCells()[1]; 
                 oCharValueInput.setEnabled(!oCharValueInput.getEnabled());
             });
-
-            let oToolbar = oTable.getHeaderToolbar();
-            if (!oToolbar){
-                MessageBox.show("Internal Error. Please contact the system administrator", {
-                    icon: MessageBox.Icon.ERROR,
-                    title: "Error",
-                    actions: MessageBox.Action.Close,
-                });
-                return;
-            }
-            let oUndoButton = new Button({
-                icon: "sap-icon://undo",
-                press: this._onUndoPressed
-            });
-            oToolbar.addContent(oUndoButton);
             this.getView().byId("addCharData").setEnabled(false);
+            let oTableBindingContext = oTable.getBindingContext();
+            let oTableModel = oTableBindingContext.getModel();
+            let oTableModelPath = oTableBindingContext.getPath();
+            let oTableModelData = oTableModel.getData(oTableModelPath);
             this._addCells(oTable);
         },
 
@@ -141,15 +131,17 @@ sap.ui.define([
             let oItem = new ColumnListItem({
                 cells:[
                     new Input({
-                        value: "{charId}",
+                        value: "",
+                        editable: true,
+                        showValueHelp: true,
+                        valueHelpRequest : this._onCharacteristicValueRequest
+                    }),
+                    new Input({
+                        value: "",
                         editable: true
                     }),
                     new Input({
-                        value: "{charValue}",
-                        editable: true
-                    }),
-                    new Input({
-                        value: "{charUom}",
+                        value: "",
                         editable: false
                     }),
                 ]
@@ -157,7 +149,7 @@ sap.ui.define([
             oTable.addItem(oItem);
         },
 
-        _onUndoPressed : function(oEvent) {
+        onUndoPressed : function(oEvent) {
             console.log("undo pressed");
         },
 
@@ -169,17 +161,30 @@ sap.ui.define([
             // in a real world scenario, this wil lbe implemented in the callback request to the odata service
             // re-enable the other rows before adding the new one, otherwise the last one will be in a different state.
             let oTable = this.getView().byId("classTable");
-            let oTableItems = oTable.getItems()
-            oTableItems.forEach((row) => {
-                let oCharValueInput = row.getCells()[1]; 
+            let oTableItems = oTable.getItems();
+            // change only the n - 1 rows' state to be input again once it's saved. this would be called in the
+            // callback success of the odata call.
+            for (let index = 0; index < oTableItems.length - 1; index++){
+                let oCharValueInput = oTableItems[index].getCells()[1]; 
                 oCharValueInput.setEnabled(!oCharValueInput.getEnabled());
-            });
-            let oRows = oTable.getBinding("items");
-            let oNewData = oRows[oRows.length - 1];
-            
-            let oContext = oRows.getPath();
-            let aData = this.getView().getModel().getProperty(oContext);
-            aData.push(oNewData);
+            }
+            //The last added char is always set as not editable
+            let oLastAddedRow = oTableItems[oTableItems.length - 1].getCells()[0].setEnabled(false);
+            let oNewData = oLastAddedRow.getCells();      
+            //updates the model (with new row appended to the table).
+            let oContext = oTable.getBindingContext()
+            let oContextPath = oContext.getPath();
+            let aData = this.getView().getModel().getProperty(oContextPath);
+            //get the new entry:
+            let oNewEntry = {
+                "charId" : oNewData[0].getValue(),
+                "charValue" : oNewData[1].getValue(),
+                "charUom": oNewData[2].getValue()
+            } 
+            aData.push(oNewEntry);
+            // disable the save button:
+            this.getView().byId("addCharData").setEnabled(true);
+            this.getView().byId("saveCharData").setEnabled(false);
 
         },
 

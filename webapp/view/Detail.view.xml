@@ -27,13 +27,15 @@
             </HBox>
             </VBox>
 
-            <Table id="classTable" >
+            <Table id="classTable">
                 <headerToolbar>
                     <OverflowToolbar id="classToolbar" >
                         <ToolbarSpacer id="test"/>
                         <SearchField id="searchClass" width="200px"></SearchField>
                         <Button id="addCharData" icon="sap-icon://add" press="onAddRow" enabled="false"></Button>
                         <Button id="saveCharData" icon="sap-icon://save" press="onSavePressed" enabled="false"></Button>
+                        <Button id="undoCharData" icon="sap-icon://undo" press="onUndoPressed" enabled="false"></Button>
+                        <Button id="deleteCharData" icon="sap-icon://delete" press="onDeletePress" enabled="false"></Button>
                     </OverflowToolbar>
                 </headerToolbar>
                 <columns>
@@ -46,9 +48,6 @@
                     <Column id="processUnitDescCol">
                         <Text id="processUnitDescColText" text="{i18n>charUom}"></Text>
                     </Column>
-                    <!-- <Column id="changeCharValue">
-                        <Text id="changeCharText" text="{i18n>changeChar}"></Text>
-                    </Column> -->
                 </columns>
 
             </Table>

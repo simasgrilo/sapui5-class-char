@@ -3,8 +3,10 @@ sap.ui.define([
     "sap/m/ColumnListItem",
     "sap/m/Input",
     "sap/m/Button",
-    "sap/m/MessageToast"
-], function(Controller, ColumnListItem, Input, Button) {
+    "sap/m/MessageBox",
+    "sap/ui/model/json/JSONModel",
+    "sap/ui/core/Fragment"
+], function(Controller, ColumnListItem, Input, Button, MessageBox, JSONModel, Fragment) {
     "use strict";
     return Controller.extend("com.grilo.classification.com.grilo.classification.controller.Detail", {
         onInit: function(){
@@ -12,12 +14,18 @@ sap.ui.define([
             let oRouter = this.getOwnerComponent().getRouter();
             oRouter.attachRoutePatternMatched(this._onRouteMatched, this);
             this._newRowVisible = false;
+            this.setViewNamedModel("../model/characteristic.json", "characteristics");
         },
 
         _onRouteMatched : function(oEvent) {
             let iIndex = oEvent.getParameter("arguments")["id"]
             let sBindEntry = `/objects/${iIndex}`;
             this.getView().bindElement(sBindEntry);
+        },
+        
+        setViewNamedModel : function(sModelPath, sModelName) {
+            let oModel = new JSONModel(sModelPath, sModelName);
+            this.getView().setModel(oModel, sModelName);     
         },
 
         pressMe: function(oEvent){
@@ -75,10 +83,37 @@ sap.ui.define([
             );
         },
 
-        _onCharacteristicValueRequest : function() {
+        _oCharDetailFragment : null,
+
+        _onCharacteristicValueRequest : async function(oEvent) {
             /**
              * sets the characteristic value help for the characteristic field.
+             * note: currently only supports single-valued characteristics
+            */
+           let oView = this.getParent().getParent().getParent().getParent().getParent();
+            if (!this._oCharDetailFragment) {
+                this._oCharDetailFragment = await Fragment.load({
+                    id: oView.getId(),
+                    name: "com.grilo.classification.com.grilo.classification.view.valueHelpCharDetail",
+                    controller: oView.getController()
+                });
+                let oCharSelectDialog = oView.byId("charSelectDialog");
+                oCharSelectDialog.setModel(this.getModel("characteristics"), "characteristics");
+            }
+            this._oCharDetailFragment.open();
+        },
+
+        onSelectedCharInHelp: function(oEvent) {
+            /**
+             * Copies the content of the characteristic selected
              */
+            let oSelectedItemTitle = oEvent.getParameter("selectedItem").getTitle();
+            let oSelectedItemDesc = oEvent.getParameter("selectedItem").getDescription();
+            let oTableRows = this.getView().byId("classTable").getItems();
+            let oNewItem = oTableRows[oTableRows.length - 1];
+            let oSelectedItemCells = oNewItem.getCells();
+            oSelectedItemCells[0].setValue(oSelectedItemTitle);
+            oSelectedItemCells[2].setValue(oSelectedItemDesc);
         },
         
         _changedCell : null, 
@@ -162,6 +197,16 @@ sap.ui.define([
             // re-enable the other rows before adding the new one, otherwise the last one will be in a different state.
             let oTable = this.getView().byId("classTable");
             let oTableItems = oTable.getItems();
+            let oLastAddedRow = oTableItems[oTableItems.length - 1];
+            let oLastAddedChar = oLastAddedRow.getCells()[0].getValue();
+            if (!this.validateChar(oLastAddedChar)) {
+                MessageBox.show("Please provide both the object and the class type", {
+                    icon: MessageBox.Icon.ERROR,
+                    title: "Error",
+                    actions: MessageBox.Action.Close,
+                });
+                return;
+            }
             // change only the n - 1 rows' state to be input again once it's saved. this would be called in the
             // callback success of the odata call.
             for (let index = 0; index < oTableItems.length - 1; index++){
@@ -169,7 +214,7 @@ sap.ui.define([
                 oCharValueInput.setEnabled(!oCharValueInput.getEnabled());
             }
             //The last added char is always set as not editable
-            let oLastAddedRow = oTableItems[oTableItems.length - 1].getCells()[0].setEnabled(false);
+            oLastAddedRow.getCells()[0].setEnabled(false);
             let oNewData = oLastAddedRow.getCells();      
             //updates the model (with new row appended to the table).
             let oContext = oTable.getBindingContext()
@@ -187,6 +232,16 @@ sap.ui.define([
             this.getView().byId("saveCharData").setEnabled(false);
 
         },
+        validateChar: function(sChar) {
+            /**
+             * Validates whether the input characteristic is a valid one.
+             * This validation will happen server side in a productive environment, as one of the services 
+             */
+            let oModelChar = this.getView().getModel("characteristics").getData()["charModel"];
+            let bExists = oModelChar.find((oElem) => oElem["char"] === sChar);
+            return bExists;
+            
+        }
 
     });
 })

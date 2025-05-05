@@ -1,0 +1,14 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core">
+	<SelectDialog
+		id="charSelectDialog"
+		title="Characteristics"
+		items="{characteristics>/charModel}"
+		search=""
+		confirm="onSelectedCharInHelp"
+		cancel="onSelectedCharInHelp">
+		<StandardListItem
+			id="charSelectDialogList"
+			title="{characteristics>char}"
+			description="{characteristics>data/uom}" />
+	</SelectDialog>
+</core:FragmentDefinition>

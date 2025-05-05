@@ -14,7 +14,6 @@ sap.ui.define([
             this.getOwnerComponent().setModel(oModel); //tip: if you want this model to be used in the binding context of another
             //view/objects, then I suggest you to bind the model to the ownner component (app descriptor) rather than the current view...
             // ERICK: 04/04/2025
-            this.setViewNamedModel("../model/characteristic.json", "characteristics");
             this.setViewNamedModel("../model/classType.json", "ClassType");
             this.setViewNamedModel("../model/objects.json", "Objects");
         },

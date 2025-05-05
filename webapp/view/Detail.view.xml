@@ -4,11 +4,17 @@
     xmlns="sap.m">
     <Page id="detailPage" showHeader="false">
         <Panel id="detailPanel" expand="true" headerText="{i18n>classChar}" >
-            <VBox id="detailInputHbox" class="sapUiMediumMargin" justifyContent="Start" alignItems="Start" >
+            <VBox id="detailInputHbox" class="sapUiMediumMargin" >
                     <Label id="detailObjectLabel" text="Object" class="sapUiSmallMarginTop" />
-                    <Input id="detailObjectInput" value="{object}" enabled="false" class="sapUiSmallMarginBottom"/>
+                    <HBox id="detailObjectData"  alignItems="Stretch" alignContent="Center">
+                        <Input id="detailObjectInput" value="{object}" enabled="false" class="sapUiSmallMarginBottom"/>
+                        <Text id="detailObjectDesc" class="sapUiSmallMarginBegin sapUiTinyMarginTop" />
+                    </HBox>
                     <Label id="detailObjectTypeLabel" text="Object Type" class="sapUiSmallMarginTop"/>
-                    <Input id="detailObjectTypeInput" value="{classType}" enabled="false" />
+                    <HBox id="detailObjectTypeData">
+                        <Input id="detailObjectTypeInput" value="{classType}" enabled="false"/>
+                        <Text id="detailObjectTypeDesc" class="sapUiSmallMarginBegin sapUiTinyMarginTop"/>
+                    </HBox>
             <HBox id="detailClassComboBox" justifyContent="Start" alignItems="Center">
                 <VBox id="detailInputComboBox" justifyContent="Start" alignItems="Stretch">
                 <Label id="detailClassLabel" text="Class" class="sapUiSmallMarginTop"/>

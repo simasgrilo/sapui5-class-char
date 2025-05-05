@@ -18,6 +18,8 @@ sap.ui.define([
 
             // set the device model
             this.setModel(models.createDeviceModel(), "device");
+            this.setModel(models.createModel("../model/objects.json","Objects"), "Objects");
+            this.setModel(models.createModel("../model/classType.json", "ClassType"), "ClassType");
 
             // enable routing
             this.getRouter().initialize();

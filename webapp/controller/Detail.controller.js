@@ -21,6 +21,29 @@ sap.ui.define([
             let iIndex = oEvent.getParameter("arguments")["id"]
             let sBindEntry = `/objects/${iIndex}`;
             this.getView().bindElement(sBindEntry);
+            // the object description is in another model. This can be changed in the data's design if desired.
+            // therefore, we need to get the current object and retrieve this from the Objects model:
+            let oObject = this.getView().getModel().getProperty(sBindEntry);
+            this._setObjectDescription(oObject["object"]);
+            this._setObjectTypeDescription(oObject["classType"]);
+        },
+
+        _setObjectDescription: function(sObjectId) {
+            let oObjectModelData = this.getOwnerComponent().getModel("Objects").getData()["Objects"];
+            let sObjectDesc = oObjectModelData.find((elem) => elem["ID"] === sObjectId);
+            if (!sObjectDesc) {
+                return;
+            }
+            this.getView().byId("detailObjectDesc").setText(sObjectDesc["Description"]);
+        },
+
+        _setObjectTypeDescription : function(sObjectTypeId) {
+            let oClassTypeModelData = this.getOwnerComponent().getModel("ClassType").getData()["classTypes"];
+            let sObjectDesc = oClassTypeModelData.find((elem) => elem["ID"] === sObjectTypeId);
+            if (!sObjectDesc) {
+                return;
+            }
+            this.getView().byId("detailObjectTypeDesc").setText(sObjectDesc["Description"]);
         },
         
         setViewNamedModel : function(sModelPath, sModelName) {

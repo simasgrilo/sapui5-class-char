@@ -32,7 +32,8 @@ sap.ui.define([
              */
             let oView = this.getView();
             let sObject = oView.byId("objectInput").getValue();
-            let sClassType = oView.byId("objectTypeInput").getValue();
+            let oClassType = oView.byId("objectTypeSelect").getSelectedItem().getText();
+            let sClassType = oClassType.split(" ")[0]
             if (!sObject || !sClassType) {
                 MessageBox.show("Please provide both the object and the class type", {
                     icon: MessageBox.Icon.ERROR,
@@ -69,10 +70,10 @@ sap.ui.define([
     
         _oFragmentEquipSearch : null,
 
-        onEquipmentValueHelpPressed: async function(oEvent) {
+        onObjectValueHelpPressed: async function(oEvent) {
             let oView = this.getView();
-            let sClassType = oView.byId("objectTypeInput").getValue();
-            if (!sClassType) {
+            let oClassType = oView.byId("objectTypeSelect").getSelectedItem();
+            if (!oClassType) {
                 //the class type is required to trigger a request for the object value help.
                 MessageBox.show("Please provide a class type before proceeding", {
                     icon: MessageBox.Icon.ERROR,
@@ -81,6 +82,7 @@ sap.ui.define([
                 });
                 return;
             }
+            let sClassType = oClassType.getText();
             console.log("pressed");
             if (!this._oFragmentEquipSearch) {
                 this._oFragmentEquipSearch = await Fragment.load({
@@ -88,14 +90,31 @@ sap.ui.define([
                     name: "com.grilo.classification.com.grilo.classification.view.valueHelpChar",
                     controller: this
                 });
-                //after loading the fragment, we need to set the aggregation for items based on the selected class
-                //filter everybody in the model that matches the class type.
-                //In fact, it's a matter of filtering the model allocated to the field objectInput.
-                //this needs to be done in both for the popup and for the suggestion:
-                let oObjectBinding = this.getView().byId("objectInput").getBinding("suggestionItems");
-                let sClassType = this.getView().byId("objectTypeInput").getValue();
-                let aFilters = [];
             }
+            let oObjectModel = oView.getModel("Objects");
+            this._oFragmentEquipSearch.setModel(oObjectModel);
+            let sClassId = sClassType.split(" ")[0];
+            let aFilters = []
+            let oFragmentItemsBinding = this._oFragmentEquipSearch.getBinding("items");
+            /*
+             * independent of whether the characteristic selection has been filtered based on the equipmen, reset it to its initial state to avoid
+             * having wrong filters.            
+             */
+            oFragmentItemsBinding.aFilters = aFilters;
+            let oFilter = new Filter({
+                path: "ClassType",
+                operator: FilterOperator.EQ,
+                value1: sClassId
+            });
+            aFilters.push(oFilter);
+            oFragmentItemsBinding.filter(aFilters);
+            this._oFragmentEquipSearch.open();
+        },
+
+        onSelectedOptionInValueHelp : function(oEvent) {
+            let aSelectedItemTitle = oEvent.getParameter("selectedItem").getProperty("title").split(" ");
+            let sObjectId = aSelectedItemTitle[aSelectedItemTitle.length - 1];
+            this.getView().byId("objectInput").setValue(sObjectId);
         },
 
         onSuggestObject: function(oEvent) {
@@ -116,5 +135,5 @@ sap.ui.define([
             // oObjectInput.getModel().refresh(true);
 
         }
-    });
+    });;
 });

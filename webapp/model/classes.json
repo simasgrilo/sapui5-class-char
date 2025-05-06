@@ -1,0 +1,82 @@
+{
+    "Classes" : [
+        {
+            "class" : "TML",
+            "classType": "002",
+            "classDesc": "Thickness Measurement",
+            "chars" : [
+                {
+                    "charId" : "ESPESSURA",
+                    "charValue" : "",
+                    "charUom": "mm"
+                },
+                {
+                    "charId" : "Vida útil",
+                    "charValue" : "",
+                    "charUom": "Anos"
+                }
+            ]
+        },
+        {
+            "class" : "PRV",
+            "classType": "002",
+            "classDesc": "Inspeção PRV",
+            "chars" : [
+                {
+                    "charId" : "Largura",
+                    "charValue" : "",
+                    "charUom": "mm"
+                },
+                {
+                    "charId" : "Vibração",
+                    "charValue" : "",
+                    "charUom": "mm/s"
+                }
+            ]
+        },
+        {
+            "class" : "NR13",
+            "classType": "003",
+            "classDesc": "Norma Regulamentadora No. 13",
+            "chars" : [
+                {
+                    "charId" : "Tipo equipamento",
+                    "charValue" : "",
+                    "charUom": ""
+                },
+                {
+                    "charId" : "Grupo de Risco",
+                    "charValue" : "",
+                    "charUom": ""
+                },
+                {
+                    "charId" : "Classe",
+                    "charValue" : "",
+                    "charUom": ""                           
+                }
+            ]
+        },
+        {
+            "class" : "NR13",
+            "classType": "003",
+            "classDesc": "Norma Regulamentadora No. 13",
+            "chars" : [
+                {
+                    "charId" : "Tipo equipamento",
+                    "charValue" : "",
+                    "charUom": ""
+                },
+                {
+                    "charId" : "Grupo de Risco",
+                    "charValue" : "",
+                    "charUom": ""
+                },
+                {
+                    "charId" : "Classe",
+                    "charValue" : "",
+                    "charUom": ""                           
+                }
+            ]
+        }
+    ]
+}

@@ -86,6 +86,13 @@
           "target": [
             "TargetDetail"
           ]
+        },
+        {
+          "name" : "RouteDetailNew",
+          "pattern" : "{id}/{classType}",
+          "target": [
+            "TargetDetail"
+          ]
         }
       ],
       "targets": {

@@ -11,11 +11,7 @@ sap.ui.define([
     return Controller.extend("com.grilo.classification.com.grilo.classification.controller.Main", {
         onInit() {
             let oModel = new JSONModel("../model/model.json");
-            this.getOwnerComponent().setModel(oModel); //tip: if you want this model to be used in the binding context of another
-            //view/objects, then I suggest you to bind the model to the ownner component (app descriptor) rather than the current view...
-            // ERICK: 04/04/2025
-            // this.setViewNamedModel("../model/classType.json", "ClassType");
-            //this.setViewNamedModel("../model/objects.json", "Objects");
+            this.getOwnerComponent().setModel(oModel); 
         },
 
         setViewNamedModel : function(sModelPath, sModelName) {
@@ -51,22 +47,44 @@ sap.ui.define([
                 }
             }
             if (iFound === -1) {
-                MessageBox.show("No data matching input parameters found!", {
-                    icon: MessageBox.Icon.ERROR,
-                    title: "Error",
-                    actions: MessageBox.Action.Close,
+                let oBundle = this.getView().getModel("i18n").getResourceBundle();
+                let oNewClassAssignText = oBundle.getText("newClassChar");
+                let sCreateNewClass = oBundle.getText("createClassInfo");
+                // note: we should add a validation to whether the current object has the correct class type.
+                MessageBox.show(oNewClassAssignText, {
+                    icon: MessageBox.Icon.INFO,
+                    title: sCreateNewClass,
+                    actions: [MessageBox.Action.OK, MessageBox.Action.CLOSE],
+                    onClose: this.onMessageBoxAction,
+                    dependentOn: this.getView()
                 });
-                return;
+
             }
-            let oRouter = this.getOwnerComponent().getRouter();
-            //let oRouter = oView.getRouter();
-            oRouter.navTo("RouteDetail", {
-                // "equip": sObject,
-                // "classType": sClassType,
-                "id": iFound
-            });
+            else {
+                let oRouter = this.getOwnerComponent().getRouter();
+                //let oRouter = oView.getRouter();
+                oRouter.navTo("RouteDetail", {
+                    // "equip": sObject,
+                    // "classType": sClassType,
+                    "id": iFound
+                });
+            }
         },
-    
+
+        onMessageBoxAction : function(oAction) {
+            console.log("MessageBoxActionSet");
+            if (oAction === 'OK') {
+                let oController = this.dependentOn.getController();
+                let oRouter = oController.getOwnerComponent().getRouter();
+                let sObjectId = oController.byId("objectInput").getValue();
+                let sObjectType = oController.byId("objectTypeSelect").getSelectedItem().getText().split("-")[0].trim();
+                oRouter.navTo("RouteDetailNew", {
+                    "id": sObjectId,
+                    "classType": sObjectType
+                });
+            }
+        },
+            
         _oFragmentEquipSearch : null,
 
         onObjectValueHelpPressed: async function(oEvent) {

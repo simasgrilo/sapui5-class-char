@@ -18,14 +18,35 @@ sap.ui.define([
         },
 
         _onRouteMatched : function(oEvent) {
-            let iIndex = oEvent.getParameter("arguments")["id"]
-            let sBindEntry = `/objects/${iIndex}`;
-            this.getView().bindElement(sBindEntry);
-            // the object description is in another model. This can be changed in the data's design if desired.
-            // therefore, we need to get the current object and retrieve this from the Objects model:
-            let oObject = this.getView().getModel().getProperty(sBindEntry);
-            this._setObjectDescription(oObject["object"]);
-            this._setObjectTypeDescription(oObject["classType"]);
+            let sRouteName = oEvent.getParameter("name");
+            let oObjectId = this.getView().byId("detailObjectInput");
+            let oObjectClassType = this.getView().byId("detailObjectTypeInput");
+            switch (sRouteName) {
+                case ("RouteDetail"):
+                    let iIndex = oEvent.getParameter("arguments")["id"];
+                    let sBindEntry = `/objects/${iIndex}`;
+                    this.getView().bindElement(sBindEntry);
+                    oObjectId.bindValue("object");
+                    oObjectClassType.bindValue("classType");
+                    // the object description is in another model. This can be changed in the data's design if desired.
+                    // therefore, we need to get the current object and retrieve this from the Objects model:
+                    let oObject = this.getView().getModel().getProperty(sBindEntry);
+                    this._setObjectDescription(oObject["object"]);
+                    this._setObjectTypeDescription(oObject["classType"]);
+                    break;
+                case ("RouteDetailNew"):
+                    let oParameters = oEvent.getParameter("arguments")
+                    let sObjectId = oParameters["id"];
+                    let sObjectClassType = oParameters["classType"];
+                    // In this case, use "UnbindProperty to correclty setup the input value"
+                    oObjectId.unbindProperty("value");
+                    oObjectId.setValue(sObjectId);
+                    oObjectClassType.unbindProperty("value");
+                    oObjectClassType.setValue(sObjectClassType);
+                    this._setObjectDescription(sObjectId);
+                    this._setObjectTypeDescription(sObjectClassType);
+                }
+            
         },
 
         _setObjectDescription: function(sObjectId) {

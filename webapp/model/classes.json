@@ -77,6 +77,33 @@
                     "charUom": ""                           
                 }
             ]
+        },
+        {
+            "class" : "Basic Data",
+            "classType": "001",
+            "classDesc": "Classe genérica para material",
+            "chars" : [
+                {
+                    "charId" : "Código MAPA",
+                    "charValue" : "",
+                    "charUom": ""
+                },
+                {
+                    "charId": "ID SIF",
+                    "charValue" : "",
+                    "charUom": ""
+                },
+                {
+                    "charId" : "Grupo de Risco",
+                    "charValue" : "",
+                    "charUom": ""
+                },
+                {
+                    "charId" : "Classe",
+                    "charValue" : "",
+                    "charUom": ""                           
+                }
+            ]
         }
     ]
 }

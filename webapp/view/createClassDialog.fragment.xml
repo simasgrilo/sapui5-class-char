@@ -1,0 +1,14 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core">
+    <SelectDialog id="createClassSelectDialog"
+                  items="{/Classes}"
+                  multiSelect="false"
+                  confirm="onConfirmItem"
+                  cancel="onConfirmItem">
+        <StandardListItem id="createClassDialogList"
+                          title="{class} - {classDesc}"
+                          description="{classType}">
+        </StandardListItem>
+    </SelectDialog>
+</core:FragmentDefinition>

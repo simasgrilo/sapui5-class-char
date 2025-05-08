@@ -5,8 +5,10 @@ sap.ui.define([
     "sap/m/Button",
     "sap/m/MessageBox",
     "sap/ui/model/json/JSONModel",
-    "sap/ui/core/Fragment"
-], function(Controller, ColumnListItem, Input, Button, MessageBox, JSONModel, Fragment) {
+    "sap/ui/core/Fragment",
+    "sap/ui/model/Filter",
+    "sap/ui/model/FilterOperator"
+], function(Controller, ColumnListItem, Input, Button, MessageBox, JSONModel, Fragment, Filter, FilterOperator) {
     "use strict";
     return Controller.extend("com.grilo.classification.com.grilo.classification.controller.Detail", {
         onInit: function(){
@@ -285,7 +287,52 @@ sap.ui.define([
             let bExists = oModelChar.find((oElem) => oElem["char"] === sChar);
             return bExists;
             
-        }
+        },
 
+        _oNewAddFragment: null,
+
+        onAddNewClass: async function(oEvent) {
+            if (!this._oNewAddFragment) {
+                this._oNewAddFragment = await Fragment.load({
+                    id : this.getView().getId(),
+                    name: "com.grilo.classification.com.grilo.classification.view.createClassDialog",
+                    controller: this
+                });
+            }
+            let oClassCharModel = this.getOwnerComponent().getModel("Classes");
+            this._oNewAddFragment.setModel(oClassCharModel);
+            let oClassCharFragmentBinding = this._oNewAddFragment.getBinding("items");
+            let aFilters = []
+            oClassCharFragmentBinding.aFilters = aFilters;
+            let sClassType = this.getView().byId("detailObjectTypeInput").getValue();
+            let oTypeFilter = new Filter({
+                path: "classType",
+                operator: FilterOperator.EQ,
+                value1: sClassType
+            });
+            aFilters.push(oTypeFilter);
+            oClassCharFragmentBinding.filter(aFilters);
+            this._oNewAddFragment.open();
+        },
+        onConfirmItem: function(oEvent) {
+            /*
+            * Event when the item is selected. This needs to validate that the class already exists.
+            *
+            */
+            let sClassWithDesc = oEvent.getParameter("selectedItem").getTitle();
+            let sClass = sClassWithDesc.split("-")[0].trim();
+            let sBindingPath = this.getView().getBindingContext().getPath()
+            let aExistingClasses = this.getView().getModel().getProperty(sBindingPath)["classes"];
+            // Note: this validation could be done directly against the model when creating.
+            let bExistsClass = aExistingClasses.find((sExistingClass) => sExistingClass["class"] === sClass);
+            if (bExistsClass) {
+                MessageBox.show("Selected class already exists!", {
+                    icon: MessageBox.Icon.ERROR,
+                    title: "Error",
+                    actions: MessageBox.Action.Close,
+                });
+            }
+            this.getView().byId("detailClassSelect").setValue(oValue);
+        }
     });
 })

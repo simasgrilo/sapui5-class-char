@@ -27,7 +27,7 @@
                         <core:Item id="classItem" key="{class}" text="{class} - {classDesc}"></core:Item>
                     </items>
                 </Select>
-                <Button id="addClass" icon="sap-icon://add" class="sapUiSmallMargin"></Button>
+                <Button id="addClass" icon="sap-icon://add" class="sapUiSmallMargin" press="onAddNewClass"></Button>
                 </HBox>
                 </VBox>
             </HBox>

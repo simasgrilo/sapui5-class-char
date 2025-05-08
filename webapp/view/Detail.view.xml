@@ -18,7 +18,7 @@
             <HBox id="detailClassComboBox" justifyContent="Start" alignItems="Center">
                 <VBox id="detailInputComboBox" justifyContent="Start" alignItems="Stretch">
                 <Label id="detailClassLabel" text="Class" class="sapUiSmallMarginTop"/>
-                <HBox id="detailClassWithButton" justifyContent="Start" alignItems="Center">
+                <HBox id="detailClassAndButtons" justifyContent="Start" alignItems="Center">
                 <Select id="detailClassSelect" 
                         items="{classes}" 
                         change="onSelectedClass" 
@@ -27,7 +27,8 @@
                         <core:Item id="classItem" key="{class}" text="{class} - {classDesc}"></core:Item>
                     </items>
                 </Select>
-                <Button id="addClass" icon="sap-icon://add" class="sapUiSmallMargin" press="onAddNewClass"></Button>
+                <Button id="addClass" icon="sap-icon://add" class="sapUiTinyMargin" press="onAddNewClass"></Button>
+                <Button id="removeClass" icon="sap-icon://delete" class="sapUiTinyMargin" press="onDeleteClassButtonClick" visible="false"></Button>
                 </HBox>
                 </VBox>
             </HBox>

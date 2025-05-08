@@ -23,6 +23,9 @@ sap.ui.define([
             let sRouteName = oEvent.getParameter("name");
             let oObjectId = this.getView().byId("detailObjectInput");
             let oObjectClassType = this.getView().byId("detailObjectTypeInput");
+            this.getView().byId("removeClass").setVisible(false);  
+            //also clear the selected value so the user can reinput that
+            this.getView().byId("detailClassSelect").setSelectedItem(null);
             switch (sRouteName) {
                 case ("RouteDetail"):
                     let iIndex = oEvent.getParameter("arguments")["id"];
@@ -79,6 +82,11 @@ sap.ui.define([
         },
 
         onSelectedClass : function(oEvent) {
+            /*
+            * Callback method to select the characteristics when a class is selected. Essentially, this would trigger an oData call
+            * to the backend upon selection. It also adds a "trash bin" button to delete the class assignment.
+            *
+            */
             let sClass = oEvent.getParameter("selectedItem").getProperty("key");
             let oTable = this.getView().byId("classTable");
             let oModel = this.getView().getModel()
@@ -88,6 +96,8 @@ sap.ui.define([
                 //this should never occur as the set of entries in the Select control alreay exists in the model.
                 return;
             }
+            //allow the removal button to be displayed only if it has found a selected class
+            this.getView().byId("removeClass").setVisible(true);
             let sBindingContextPath = `${this.getView().getBindingContext().getPath()}/classes/${iPos}/chars`;
             oTable.bindElement(sBindingContextPath); //bindElement does not bind automatically aggregation, only allows resolving binding path for properties
             let that = this;
@@ -127,6 +137,30 @@ sap.ui.define([
             return oModelData.findIndex((oClass) => //works like Python lambda... this is a testing function, not your regular arrow function
                 oClass["class"] === sClass
             );
+        },
+
+        onDeleteClassButtonClick : function(oEvent) {
+            /*
+            * callback to remove the class assignment from the model
+            * @param {sap.ui.base.Event} oEvent - Button Event that triggered this callback
+            * note that this is a PoC, this is removed from the JSON model by getting the binding context of the view
+            * and then removing the selected class from it.
+            * in a oData model, this would trigger a DELETE request to the backend,
+            * and the whole model deletion should also hit the class-characteristic relation in the backend.
+            */
+           let oSelectControl= this.getView().byId("detailClassSelect");
+           let sSelectedClass= oSelectControl.getSelectedItem().getKey();
+           let oSelectControlModel = oSelectControl.getModel();
+           let oSelectControlBindingPath = oSelectControl.getBinding("items").getPath()
+           let sViewBindingPath = this.getView().getBindingContext().getPath();
+           let sClassPropertyPath = `${sViewBindingPath}/${oSelectControlBindingPath}`
+           let aClassModelData = oSelectControlModel.getProperty(sClassPropertyPath);
+           if (aClassModelData) {
+            let iClassIndex = aClassModelData.findIndex((elem) => elem['class'] === sSelectedClass);
+            aClassModelData.splice(iClassIndex, 1);
+            oSelectControlModel.setProperty(sClassPropertyPath, aClassModelData);
+           }
+
         },
 
         _oCharDetailFragment : null,

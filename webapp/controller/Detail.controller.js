@@ -128,7 +128,7 @@ sap.ui.define([
             //as soon as an entry is selected, the user can then create new entries or save them.
             let oClass = this.getView().byId("detailClassSelect").getSelectedItem()//getSelectedKey("")
             if (oClass) {
-                this.getView().byId("addCharData").setEnabled(true);
+                // this.getView().byId("addCharData").setEnabled(true);
                 this.getView().byId("saveCharData").setEnabled(true);
             }
         
@@ -234,7 +234,7 @@ sap.ui.define([
                 let oCharValueInput = row.getCells()[1]; 
                 oCharValueInput.setEnabled(!oCharValueInput.getEnabled());
             });
-            this.getView().byId("addCharData").setEnabled(false);
+            // this.getView().byId("addCharData").setEnabled(false);
             let oTableBindingContext = oTable.getBindingContext();
             let oTableModel = oTableBindingContext.getModel();
             let oTableModelPath = oTableBindingContext.getPath();
@@ -264,10 +264,6 @@ sap.ui.define([
             oTable.addItem(oItem);
         },
 
-        onUndoPressed : function(oEvent) {
-            console.log("undo pressed");
-        },
-
         onSavePressed : function(oEvent) {
             /**
              * This event will trigger the oData request to save the new characteristic in the backend.
@@ -289,27 +285,25 @@ sap.ui.define([
             }
             // change only the n - 1 rows' state to be input again once it's saved. this would be called in the
             // callback success of the odata call.
-            for (let index = 0; index < oTableItems.length - 1; index++){
-                let oCharValueInput = oTableItems[index].getCells()[1]; 
-                oCharValueInput.setEnabled(!oCharValueInput.getEnabled());
-            }
-            //The last added char is always set as not editable
-            oLastAddedRow.getCells()[0].setEnabled(false);
-            let oNewData = oLastAddedRow.getCells();      
-            //updates the model (with new row appended to the table).
+            // //The last added char is always set as not editable
+            // oLastAddedRow.getCells()[0].setEnabled(false);
+            // let oNewData = oLastAddedRow.getCells();      
+            //updates the model with the changed data
             let oContext = oTable.getBindingContext()
             let oContextPath = oContext.getPath();
             let aData = this.getView().getModel().getProperty(oContextPath);
-            //get the new entry:
-            let oNewEntry = {
-                "charId" : oNewData[0].getValue(),
-                "charValue" : oNewData[1].getValue(),
-                "charUom": oNewData[2].getValue()
-            } 
-            aData.push(oNewEntry);
+            let oModel = oContext.getModel();
+            oModel.setProperty(oContextPath, aData);
+            // //get the new entry:
+            // let oNewEntry = {
+            //     "charId" : oNewData[0].getValue(),
+            //     "charValue" : oNewData[1].getValue(),
+            //     "charUom": oNewData[2].getValue()
+            // } 
+            // aData.push(oNewEntry);
             // disable the save button:
-            this.getView().byId("addCharData").setEnabled(true);
-            this.getView().byId("saveCharData").setEnabled(false);
+            // this.getView().byId("addCharData").setEnabled(true);
+            // this.getView().byId("saveCharData").setEnabled(false);
 
         },
         validateChar: function(sChar) {
@@ -354,19 +348,64 @@ sap.ui.define([
             *
             */
             let sClassWithDesc = oEvent.getParameter("selectedItem").getTitle();
+            let sObject = this.getView().byId("detailObjectInput").getValue();
             let sClass = sClassWithDesc.split("-")[0].trim();
             let sBindingPath = this.getView().getBindingContext().getPath()
             let aExistingClasses = this.getView().getModel().getProperty(sBindingPath)["classes"];
             // Note: this validation could be done directly against the model when creating.
             let bExistsClass = aExistingClasses.find((sExistingClass) => sExistingClass["class"] === sClass);
             if (bExistsClass) {
-                MessageBox.show("Selected class already exists!", {
+                MessageBox.show(`Selected class already assigned to object ${sObject}`, {
                     icon: MessageBox.Icon.ERROR,
                     title: "Error",
                     actions: MessageBox.Action.Close,
                 });
+                return;
             }
-            this.getView().byId("detailClassSelect").setValue(oValue);
+            this.getView().byId("detailClassSelect").setValue(sClassWithDesc);
+            this.getView().byId("removeClass").setVisible(false);
+            let sClassId = sClassWithDesc.split("-")[0].trim();
+            this._loadCharacteristics(sClassId);
+        },
+
+        _loadCharacteristics: function(sClass) {
+            /**
+             * Loads all characteristics upon creating a new class/characteristic assignemnt for the equipment.
+             * @param {String} sClass - name of the class
+             * 
+             */
+            let oMasterCharModel = this.getOwnerComponent().getModel("Classes");
+            let oMasterCharModelData = oMasterCharModel.getData()["Classes"];
+            let iClassId = oMasterCharModelData.findIndex((oClass) => oClass["class"] === sClass);
+            if (!iClassId) {
+                return;
+            }
+            let oCharTable = this.getView().byId("classTable");
+            oCharTable.setModel(oMasterCharModel);
+            let sBindingPath = `/Classes/${iClassId}/chars`;
+            oCharTable.bindElement({
+                path: sBindingPath,
+                model: oMasterCharModel
+            });
+            oCharTable.bindAggregation("items", {
+                path: sBindingPath,
+                template: new ColumnListItem({
+                    cells : [
+                                new Input({
+                                    value: "{charId}",
+                                    editable: false,
+                                }),
+                                new Input({
+                                    value: "{charValue}",
+                                    editable: true
+                                }),
+                                new Input({
+                                    value: "{charUom}",
+                                    editable: false
+                                }),
+                            ]
+                })
+            });
         }
     });
 })

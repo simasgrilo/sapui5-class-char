@@ -35,6 +35,28 @@
             ]
         },
         {
+            "class" : "PWOIL",
+            "classType": "002",
+            "classDesc": "Oil-bathing Power Transformer",
+            "chars" : [
+                {
+                    "charId" : "Temperatura",
+                    "charValue" : "",
+                    "charUom": "ºC"
+                },
+                {
+                    "charId" : "Vibração",
+                    "charValue" : "",
+                    "charUom": "mm/s"
+                },
+                {
+                    "charId" : "Fator de risco",
+                    "charValue": "",
+                    "charUom": ""
+                }
+            ]
+        },
+        {
             "class" : "NR13",
             "classType": "003",
             "classDesc": "Norma Regulamentadora No. 13",

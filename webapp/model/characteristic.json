@@ -23,6 +23,46 @@
                 "domain": "number",
                 "maxValue" : 6
             }
+        },
+        {
+            "char" : "ESPESSURA",
+            "data" : {
+                "uom" : "mm",
+                "domain": "number",
+                "maxValue" : 6
+            }
+        },
+        {
+            "char" : "Vida útil",
+            "data" : {
+                "uom" : "Anos",
+                "domain": "datetime",
+                "maxValue" : 9999
+            }
+        },
+        {
+            "char" : "Temperatura",
+            "data" : {
+                "uom": "ºC",
+                "domain": "number",
+                "maxValue": ""
+            }
+        },
+        {
+            "char" : "Vibração",
+            "data" : {
+                "uom": "mm/s",
+                "domain": "number",
+                "maxValue": ""
+            }
+        },
+        {
+            "char" : "Fator de risco",
+            "data" : {
+                "uom": "",
+                "domain": "",
+                "maxValue": ""
+            }
         }
     ]
 }

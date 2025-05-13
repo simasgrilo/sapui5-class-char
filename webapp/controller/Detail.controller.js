@@ -50,7 +50,7 @@ sap.ui.define([
                     let sObjectClassType = oParameters["classType"];
                     // In this case, use "UnbindProperty to correctly setup the input value"
                     // this includes cleaning any binding that depends on entries that exists in model.json
-                    oSelectControl.bindElement('/objects'); //clear the binding path.
+                    // oSelectControl.bindElement('/objects'); //clear the binding path.
                     oObjectId.unbindProperty("value");
                     oObjectId.setValue(sObjectId);
                     oObjectClassType.unbindProperty("value");
@@ -85,10 +85,6 @@ sap.ui.define([
         setViewNamedModel : function(sModelPath, sModelName) {
             let oModel = new JSONModel(sModelPath, sModelName);
             this.getView().setModel(oModel, sModelName);     
-        },
-
-        pressMe: function(oEvent){
-            console.log(oEvent);
         },
 
         onSelectedClass : function(oEvent) {
@@ -129,17 +125,12 @@ sap.ui.define([
                                     value: "{charUom}",
                                     editable: false
                                 }),
-                                // new Button({
-                                //     icon: "sap-icon://user-edit",
-                                //     press: that.onChangePress
-                                // })
                             ]
                 })
             });
             //as soon as an entry is selected, the user can then create new entries or save them.
             let oClass = this.getView().byId("detailClassSelect").getSelectedItem()//getSelectedKey("")
             if (oClass) {
-                // this.getView().byId("addCharData").setEnabled(true);
                 this.getView().byId("saveCharData").setEnabled(true);
             }
         
@@ -170,6 +161,8 @@ sap.ui.define([
             let iClassIndex = aClassModelData.findIndex((elem) => elem['class'] === sSelectedClass);
             aClassModelData.splice(iClassIndex, 1);
             oSelectControlModel.setProperty(sClassPropertyPath, aClassModelData);
+            let oBundle = this.getView().getModel("i18n").getResourceBundle();
+            MessageToast.show(oBundle.getValue(ClassCharDelete));
            }
 
         },
@@ -229,7 +222,6 @@ sap.ui.define([
                 let oCharValueInput = row.getCells()[1]; 
                 oCharValueInput.setEnabled(!oCharValueInput.getEnabled());
             });
-            // this.getView().byId("addCharData").setEnabled(false);
             let oTableBindingContext = oTable.getBindingContext();
             let oTableModel = oTableBindingContext.getModel();
             let oTableModelPath = oTableBindingContext.getPath();
@@ -268,26 +260,6 @@ sap.ui.define([
             // in a real world scenario, this will be implemented in the callback request to the odata service
             // re-enable the other rows before adding the new one, otherwise the last one will be in a different state.
             let oTable = this.getView().byId("classTable");
-            // let oTableItems = oTable.getItems();
-            // let oLastAddedRow = oTableItems[oTableItems.length - 1];
-            // let oLastAddedChar = oLastAddedRow.getCells()[0].getValue();
-            // if (!this.validateChar(oLastAddedChar)) {
-            //     MessageBox.show("Please provide both the object and the class type", {
-            //         icon: MessageBox.Icon.ERROR,
-            //         title: "Error",
-            //         actions: MessageBox.Action.Close,
-            //     });
-            //     return;
-            // }
-            // let oContext = oTable.getBindingContext()
-            // if (oContext) {
-            //     // scenario: new class/char assignment is created without previously selecting a class
-            //     let oContextPath = oContext.getPath();
-            //     let aData = this.getView().getModel().getProperty(oContextPath);
-            //     let oModel = oContext.getModel();
-            //     oModel.setProperty(oContextPath, aData);
-            //     return;
-            // }
             // this is the case we're adding a new characteristic to the model: because we're using a JSONModel, we need to append
             // the new content to the model itself. Note that this will NOT be the same treatment as if we were using a odata model.
             let oModel = this.getView().getModel();
@@ -313,6 +285,7 @@ sap.ui.define([
                 return;
             }
             await this.getView().byId("detailClassSelect").setSelectedKey(oPickedClassId);
+            let oItem = this.getView().byId("detailClassSelect").getSelectedItem();
             let oBundle = this.getView().getModel("i18n").getResourceBundle();
             let sClassCharSuccessful = oBundle.getText("ClassCharAssigned");
             MessageToast.show(sClassCharSuccessful);
@@ -365,7 +338,7 @@ sap.ui.define([
             let oUpdatedModel = {
                 "objects" : aNewData
             }
-            await oModel.setData(oUpdatedModel);
+            oModel.setData(oUpdatedModel);
 
 
         },
@@ -436,7 +409,7 @@ sap.ui.define([
             this.getView().byId("detailClassSelect").setValue(sClassWithDesc); 
             this._currentPickedClass = sClassWithDesc;
             //I think this is a private method that was forgotten as a public method. Perhaps open an issue?
-            //TODO open an issue based on the above method. this should not be able to be used...
+            // TODO open an issue based on the above method. this should not be able to be used...
             // you need to add it to the binding manually, not to the screen control, by using the current jsonmodel before sending it back to the
             // oData service. But, if I do this before the 'save' button is clicked, then I might have a data issue as i'd update
             // the data model before the data is commited by the user (make sense?)

@@ -7,8 +7,9 @@ sap.ui.define([
     "sap/ui/model/json/JSONModel",
     "sap/ui/core/Fragment",
     "sap/ui/model/Filter",
-    "sap/ui/model/FilterOperator"
-], function(Controller, ColumnListItem, Input, Button, MessageBox, JSONModel, Fragment, Filter, FilterOperator) {
+    "sap/ui/model/FilterOperator",
+    "sap/m/MessageToast"
+], function(Controller, ColumnListItem, Input, Button, MessageBox, JSONModel, Fragment, Filter, FilterOperator, MessageToast) {
     "use strict";
     return Controller.extend("com.grilo.classification.com.grilo.classification.controller.Detail", {
         onInit: function(){
@@ -23,13 +24,17 @@ sap.ui.define([
             let sRouteName = oEvent.getParameter("name");
             let oObjectId = this.getView().byId("detailObjectInput");
             let oObjectClassType = this.getView().byId("detailObjectTypeInput");
+            let oSelectControl = this.getView().byId("detailClassSelect");
+            let oCharTable = this.getView().byId("classTable");
+            // Clear the table binding whenever the view is called again. It will be rebound in the class selection.
+            oCharTable.unbindItems();
             this.getView().byId("removeClass").setVisible(false);  
             //also clear the selected value so the user can reinput that
             this.getView().byId("detailClassSelect").setSelectedItem(null);
             switch (sRouteName) {
                 case ("RouteDetail"):
-                    let iIndex = oEvent.getParameter("arguments")["id"];
-                    let sBindEntry = `/objects/${iIndex}`;
+                    this._iObjectIndex = oEvent.getParameter("arguments")["id"];
+                    let sBindEntry = `/objects/${this._iObjectIndex}`;
                     this.getView().bindElement(sBindEntry);
                     oObjectId.bindValue("object");
                     oObjectClassType.bindValue("classType");
@@ -43,16 +48,21 @@ sap.ui.define([
                     let oParameters = oEvent.getParameter("arguments")
                     let sObjectId = oParameters["id"];
                     let sObjectClassType = oParameters["classType"];
-                    // In this case, use "UnbindProperty to correclty setup the input value"
+                    // In this case, use "UnbindProperty to correctly setup the input value"
+                    // this includes cleaning any binding that depends on entries that exists in model.json
+                    oSelectControl.bindElement('/objects'); //clear the binding path.
                     oObjectId.unbindProperty("value");
                     oObjectId.setValue(sObjectId);
                     oObjectClassType.unbindProperty("value");
                     oObjectClassType.setValue(sObjectClassType);
                     this._setObjectDescription(sObjectId);
                     this._setObjectTypeDescription(sObjectClassType);
+                    break;
                 }
             
         },
+
+        _iObjectIndex: null,
 
         _setObjectDescription: function(sObjectId) {
             let oObjectModelData = this.getOwnerComponent().getModel("Objects").getData()["Objects"];
@@ -90,6 +100,7 @@ sap.ui.define([
             let sClass = oEvent.getParameter("selectedItem").getProperty("key");
             let oTable = this.getView().byId("classTable");
             let oModel = this.getView().getModel()
+            oTable.setModel(oModel);
             let oModelData = oModel.getProperty(this.getView().getBindingContext().getPath())["classes"]
             let iPos = this._getPosOfClass(oModelData, sClass);
             if (!iPos === -1) {
@@ -198,22 +209,6 @@ sap.ui.define([
         
         _changedCell : null, 
 
-        // onChangePress: function(oEvent) {
-        //     /**
-        //      * Gets the current row of the table to allow the user to change it
-        //      * Considers the id of the parent of the button (the cell) as the selected row.
-        //      * 
-        //      */
-        //     // let aIdSplit = oEvent.getSource().getParent().getId().split("-");
-        //     // let iId = Number(aIdSplit[aIdSplit.length - 1]);
-        //     // let aSelectedRowCells = oEvent.getSource().getParent()
-        //     let oCharValue = oEvent.getSource().getParent().getCells()[1];
-        //     this._changedCell = oCharValue;
-        //     oCharValue.setEditable(!oCharValue.getEditable());
-        //     //TODO: make this changeable for the cell that was changed. only once at a time or massive change, also.
-        //     console.log(oEvent);
-        // },
-
         onAddRow : function(oEvent) {
             /**
              * Adds a row to the table of characteristics. This makes the app enter in a state of "Adding". I should be able to remove this newly
@@ -264,46 +259,114 @@ sap.ui.define([
             oTable.addItem(oItem);
         },
 
-        onSavePressed : function(oEvent) {
+        onSavePressed : async function(oEvent) {
             /**
              * This event will trigger the oData request to save the new characteristic in the backend.
              * As a mockup, it only adds to the current table 
+             * @param {sap.ui.base.Event} oEvent - Event triggered when the save Button of the table toolbar is pressed
              */
-            // in a real world scenario, this wil lbe implemented in the callback request to the odata service
+            // in a real world scenario, this will be implemented in the callback request to the odata service
             // re-enable the other rows before adding the new one, otherwise the last one will be in a different state.
             let oTable = this.getView().byId("classTable");
-            let oTableItems = oTable.getItems();
-            let oLastAddedRow = oTableItems[oTableItems.length - 1];
-            let oLastAddedChar = oLastAddedRow.getCells()[0].getValue();
-            if (!this.validateChar(oLastAddedChar)) {
-                MessageBox.show("Please provide both the object and the class type", {
-                    icon: MessageBox.Icon.ERROR,
-                    title: "Error",
-                    actions: MessageBox.Action.Close,
-                });
+            // let oTableItems = oTable.getItems();
+            // let oLastAddedRow = oTableItems[oTableItems.length - 1];
+            // let oLastAddedChar = oLastAddedRow.getCells()[0].getValue();
+            // if (!this.validateChar(oLastAddedChar)) {
+            //     MessageBox.show("Please provide both the object and the class type", {
+            //         icon: MessageBox.Icon.ERROR,
+            //         title: "Error",
+            //         actions: MessageBox.Action.Close,
+            //     });
+            //     return;
+            // }
+            // let oContext = oTable.getBindingContext()
+            // if (oContext) {
+            //     // scenario: new class/char assignment is created without previously selecting a class
+            //     let oContextPath = oContext.getPath();
+            //     let aData = this.getView().getModel().getProperty(oContextPath);
+            //     let oModel = oContext.getModel();
+            //     oModel.setProperty(oContextPath, aData);
+            //     return;
+            // }
+            // this is the case we're adding a new characteristic to the model: because we're using a JSONModel, we need to append
+            // the new content to the model itself. Note that this will NOT be the same treatment as if we were using a odata model.
+            let oModel = this.getView().getModel();
+            let sObjectId = this.getView().byId("detailObjectInput").getValue();
+            let sObjectClassType = this.getView().byId("detailObjectTypeInput").getValue();
+            let aModelData = oModel.getData()['objects'];
+            // Build the entry in the corresponding format based on the model: object and type with class and its corresponding chars
+            let oNewModelEntry = this._buildNewModelEntry();
+            let aCurrentObjectClasses = aModelData.find((data) => data['object'] == sObjectId && data['classType'] == sObjectClassType);
+            if (!aCurrentObjectClasses) {
+                // add a new class for an equipment that does not have it (entry does not exist in the model)
+                this._addNewClassChar(oNewModelEntry);
+            }
+            else {
+                // add a new class for an equipment with already assigned classes (entry exists in the model)
+                aCurrentObjectClasses["classes"].push(oNewModelEntry["classes"][0]);
+                await this.getView().getModel().setProperty(`/objects/${this._iObjectIndex}`, aCurrentObjectClasses);
+            }
+            let oSelectControl = this.getView().byId("detailClassSelect");
+            let oPickedClassId = this._currentPickedClass.split("-")[0];
+            let iNewClass = oSelectControl.getItems().findIndex((oObject) => oObject.getKey() == oPickedClassId);
+            if (!iNewClass) {
                 return;
             }
-            // change only the n - 1 rows' state to be input again once it's saved. this would be called in the
-            // callback success of the odata call.
-            // //The last added char is always set as not editable
-            // oLastAddedRow.getCells()[0].setEnabled(false);
-            // let oNewData = oLastAddedRow.getCells();      
-            //updates the model with the changed data
-            let oContext = oTable.getBindingContext()
-            let oContextPath = oContext.getPath();
-            let aData = this.getView().getModel().getProperty(oContextPath);
-            let oModel = oContext.getModel();
-            oModel.setProperty(oContextPath, aData);
-            // //get the new entry:
-            // let oNewEntry = {
-            //     "charId" : oNewData[0].getValue(),
-            //     "charValue" : oNewData[1].getValue(),
-            //     "charUom": oNewData[2].getValue()
-            // } 
-            // aData.push(oNewEntry);
-            // disable the save button:
-            // this.getView().byId("addCharData").setEnabled(true);
-            // this.getView().byId("saveCharData").setEnabled(false);
+            await this.getView().byId("detailClassSelect").setSelectedKey(oPickedClassId);
+            let oBundle = this.getView().getModel("i18n").getResourceBundle();
+            let sClassCharSuccessful = oBundle.getText("ClassCharAssigned");
+            MessageToast.show(sClassCharSuccessful);
+
+        },
+
+        _buildNewModelEntry: function() {
+            let sClassIdAndDesc = this._currentPickedClass.split("-");
+            let sObjectId = this.getView().byId("detailObjectInput").getValue();
+            let sClassType = this.getView().byId("detailObjectTypeInput").getValue();
+            let sClassId = sClassIdAndDesc[0];
+            let sClassDesc = sClassIdAndDesc[1];
+            let aCharsTableItems = this._getCharEntries();
+            let aNewClassChar = [{
+                "class": sClassId,
+                "classDesc": sClassDesc,
+                "chars": aCharsTableItems
+            }]
+            let oNewDataEntry = {
+                "object" : sObjectId,
+                "classType" : sClassType,
+                "classTypeDesc": "", //this should get the class type description from the class model...
+                "classes" : aNewClassChar
+            }
+            return oNewDataEntry;
+        },
+
+        _getCharEntries : function() {
+            let aCharsTableItems = this.getView().byId("classTable").getItems();
+            let aChars = [];
+            for (let oEntry of aCharsTableItems) {
+                let oEntryCells = oEntry.getCells();
+                aChars.push({
+                    "charId": oEntryCells[0].getValue(),
+                    "charValue": oEntryCells[1].getValue(),
+                    "charUom": oEntryCells[2].getValue()
+                });
+            }
+            return aChars;
+        },
+
+        _addNewClassChar: async function(oNewDataEntry) {
+            /**
+             * Gets the screen controls related with the input of the new class, and add it to the model.
+             * @param {Array} aData - the data of the main model (which would be of type sap.ui.model.json.JSONModel)
+             */
+            let oModel = this.getView().getModel();
+            let aNewData = oModel.getData()["objects"];
+            aNewData.push(oNewDataEntry);
+            let oUpdatedModel = {
+                "objects" : aNewData
+            }
+            await oModel.setData(oUpdatedModel);
+
 
         },
         validateChar: function(sChar) {
@@ -342,27 +405,41 @@ sap.ui.define([
             oClassCharFragmentBinding.filter(aFilters);
             this._oNewAddFragment.open();
         },
+
+        _currentPickedClass : null,
+
         onConfirmItem: function(oEvent) {
             /*
-            * Event when the item is selected. This needs to validate that the class already exists.
+            * Event callback when the item is selected. This needs to validate that the class already exists.
+            * @param {sap.ui.base.Event} oEvent - Event triggered when the item is selected in the SelectDialog
             *
             */
             let sClassWithDesc = oEvent.getParameter("selectedItem").getTitle();
             let sObject = this.getView().byId("detailObjectInput").getValue();
             let sClass = sClassWithDesc.split("-")[0].trim();
-            let sBindingPath = this.getView().getBindingContext().getPath()
-            let aExistingClasses = this.getView().getModel().getProperty(sBindingPath)["classes"];
-            // Note: this validation could be done directly against the model when creating.
-            let bExistsClass = aExistingClasses.find((sExistingClass) => sExistingClass["class"] === sClass);
-            if (bExistsClass) {
-                MessageBox.show(`Selected class already assigned to object ${sObject}`, {
-                    icon: MessageBox.Icon.ERROR,
-                    title: "Error",
-                    actions: MessageBox.Action.Close,
-                });
-                return;
+            let oClassBindingContext = this.getView().getBindingContext()
+            if (oClassBindingContext) {
+                let sBindingPath = oClassBindingContext.getPath();
+                // this is the scenario where the object already have a class assigned to it.
+                // Note: this validation could be done directly against the model when creating.
+                let aExistingClasses = this.getView().getModel().getProperty(sBindingPath)["classes"];
+                let bExistsClass = aExistingClasses.find((sExistingClass) => sExistingClass["class"] === sClass);
+                if (bExistsClass) {
+                    MessageBox.show(`Selected class already assigned to object ${sObject}`, {
+                        icon: MessageBox.Icon.ERROR,
+                        title: "Error",
+                        actions: MessageBox.Action.Close,
+                    });
+                    return;
+                }
             }
-            this.getView().byId("detailClassSelect").setValue(sClassWithDesc);
+            this.getView().byId("detailClassSelect").setValue(sClassWithDesc); 
+            this._currentPickedClass = sClassWithDesc;
+            //I think this is a private method that was forgotten as a public method. Perhaps open an issue?
+            //TODO open an issue based on the above method. this should not be able to be used...
+            // you need to add it to the binding manually, not to the screen control, by using the current jsonmodel before sending it back to the
+            // oData service. But, if I do this before the 'save' button is clicked, then I might have a data issue as i'd update
+            // the data model before the data is commited by the user (make sense?)
             this.getView().byId("removeClass").setVisible(false);
             let sClassId = sClassWithDesc.split("-")[0].trim();
             this._loadCharacteristics(sClassId);

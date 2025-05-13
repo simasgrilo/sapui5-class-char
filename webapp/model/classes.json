@@ -57,6 +57,54 @@
             ]
         },
         {
+            "class" : "ELEC_PUMP",
+            "classType": "002",
+            "classDesc": "ELectric Pumps",
+            "chars" : [
+                {
+                    "charId" : "Temperatura",
+                    "charValue" : "",
+                    "charUom": "ºC"
+                },
+                {
+                    "charId" : "Vibração",
+                    "charValue" : "",
+                    "charUom": "mm/s"
+                },
+                {
+                    "charId" : "Fator de risco",
+                    "charValue": "",
+                    "charUom": ""
+                },                
+                {
+                    "charId" : "Char Lorem 1",
+                    "charValue": "",
+                    "charUom": ""
+                },                
+                {
+                    "charId" : "Char Lorem 2",
+                    "charValue": "",
+                    "charUom": ""
+                },                
+                {
+                    "charId" : "Char Lorem 3",
+                    "charValue": "",
+                    "charUom": ""
+                },                
+                {
+                    "charId" : "Char Lorem 4",
+                    "charValue": "",
+                    "charUom": "kPA"
+                },
+                {
+                    "charId" : "Char Lorem 5",
+                    "charValue": "",
+                    "charUom": ""
+                }
+                
+            ]
+        },
+        {
             "class" : "NR13",
             "classType": "003",
             "classDesc": "Norma Regulamentadora No. 13",

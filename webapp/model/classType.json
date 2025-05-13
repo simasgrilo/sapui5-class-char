@@ -1,0 +1,16 @@
+{
+    "classTypes" : [
+        { 
+            "ID" : "001",
+            "Description" : "Material"
+        },
+        {
+            "ID": "002",
+            "Description": "Equipment"
+        },
+        {
+            "ID" : "003",
+            "Description" : "Functional Location"
+        }
+    ]
+}

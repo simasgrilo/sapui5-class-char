@@ -1,0 +1,179 @@
+{
+    "Classes" : [
+        {
+            "class" : "TML",
+            "classType": "002",
+            "classDesc": "Thickness Measurement",
+            "chars" : [
+                {
+                    "charId" : "ESPESSURA",
+                    "charValue" : "",
+                    "charUom": "mm"
+                },
+                {
+                    "charId" : "Vida útil",
+                    "charValue" : "",
+                    "charUom": "Anos"
+                }
+            ]
+        },
+        {
+            "class" : "PRV",
+            "classType": "002",
+            "classDesc": "Inspeção PRV",
+            "chars" : [
+                {
+                    "charId" : "Largura",
+                    "charValue" : "",
+                    "charUom": "mm"
+                },
+                {
+                    "charId" : "Vibração",
+                    "charValue" : "",
+                    "charUom": "mm/s"
+                }
+            ]
+        },
+        {
+            "class" : "PWOIL",
+            "classType": "002",
+            "classDesc": "Oil-bathing Power Transformer",
+            "chars" : [
+                {
+                    "charId" : "Temperatura",
+                    "charValue" : "",
+                    "charUom": "ºC"
+                },
+                {
+                    "charId" : "Vibração",
+                    "charValue" : "",
+                    "charUom": "mm/s"
+                },
+                {
+                    "charId" : "Fator de risco",
+                    "charValue": "",
+                    "charUom": ""
+                }
+            ]
+        },
+        {
+            "class" : "ELEC_PUMP",
+            "classType": "002",
+            "classDesc": "ELectric Pumps",
+            "chars" : [
+                {
+                    "charId" : "Temperatura",
+                    "charValue" : "",
+                    "charUom": "ºC"
+                },
+                {
+                    "charId" : "Vibração",
+                    "charValue" : "",
+                    "charUom": "mm/s"
+                },
+                {
+                    "charId" : "Fator de risco",
+                    "charValue": "",
+                    "charUom": ""
+                },                
+                {
+                    "charId" : "Char Lorem 1",
+                    "charValue": "",
+                    "charUom": ""
+                },                
+                {
+                    "charId" : "Char Lorem 2",
+                    "charValue": "",
+                    "charUom": ""
+                },                
+                {
+                    "charId" : "Char Lorem 3",
+                    "charValue": "",
+                    "charUom": ""
+                },                
+                {
+                    "charId" : "Char Lorem 4",
+                    "charValue": "",
+                    "charUom": "kPA"
+                },
+                {
+                    "charId" : "Char Lorem 5",
+                    "charValue": "",
+                    "charUom": ""
+                }
+                
+            ]
+        },
+        {
+            "class" : "NR13",
+            "classType": "003",
+            "classDesc": "Norma Regulamentadora No. 13",
+            "chars" : [
+                {
+                    "charId" : "Tipo equipamento",
+                    "charValue" : "",
+                    "charUom": ""
+                },
+                {
+                    "charId" : "Grupo de Risco",
+                    "charValue" : "",
+                    "charUom": ""
+                },
+                {
+                    "charId" : "Classe",
+                    "charValue" : "",
+                    "charUom": ""                           
+                }
+            ]
+        },
+        {
+            "class" : "NR13",
+            "classType": "003",
+            "classDesc": "Norma Regulamentadora No. 13",
+            "chars" : [
+                {
+                    "charId" : "Tipo equipamento",
+                    "charValue" : "",
+                    "charUom": ""
+                },
+                {
+                    "charId" : "Grupo de Risco",
+                    "charValue" : "",
+                    "charUom": ""
+                },
+                {
+                    "charId" : "Classe",
+                    "charValue" : "",
+                    "charUom": ""                           
+                }
+            ]
+        },
+        {
+            "class" : "Basic Data",
+            "classType": "001",
+            "classDesc": "Classe genérica para material",
+            "chars" : [
+                {
+                    "charId" : "Código MAPA",
+                    "charValue" : "",
+                    "charUom": ""
+                },
+                {
+                    "charId": "ID SIF",
+                    "charValue" : "",
+                    "charUom": ""
+                },
+                {
+                    "charId" : "Grupo de Risco",
+                    "charValue" : "",
+                    "charUom": ""
+                },
+                {
+                    "charId" : "Classe",
+                    "charValue" : "",
+                    "charUom": ""                           
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,63 @@
+<mvc:View controllerName="com.grilo.classification.com.grilo.classification.controller.Detail"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns:core="sap.ui.core"
+    xmlns="sap.m">
+    <Page id="detailPage" showHeader="false">
+        <Panel id="detailPanel" expand="true" headerText="{i18n>classChar}" >
+            <VBox id="detailInputHbox" class="sapUiMediumMargin" >
+                    <Label id="detailObjectLabel" text="Object" class="sapUiSmallMarginTop" />
+                    <HBox id="detailObjectData"  alignItems="Stretch" alignContent="Center">
+                        <Input id="detailObjectInput" value="{object}" enabled="false" class="sapUiSmallMarginBottom"/>
+                        <Text id="detailObjectDesc" class="sapUiSmallMarginBegin sapUiTinyMarginTop" />
+                    </HBox>
+                    <Label id="detailObjectTypeLabel" text="Object Type" class="sapUiSmallMarginTop"/>
+                    <HBox id="detailObjectTypeData">
+                        <Input id="detailObjectTypeInput" value="{classType}" enabled="false"/>
+                        <Text id="detailObjectTypeDesc" class="sapUiSmallMarginBegin sapUiTinyMarginTop"/>
+                    </HBox>
+            <HBox id="detailClassComboBox" justifyContent="Start" alignItems="Center">
+                <VBox id="detailInputComboBox" justifyContent="Start" alignItems="Stretch">
+                <Label id="detailClassLabel" text="Class" class="sapUiSmallMarginTop"/>
+                <HBox id="detailClassAndButtons" justifyContent="Start" alignItems="Center">
+                <Select id="detailClassSelect" 
+                        items="{classes}" 
+                        change="onSelectedClass" 
+                        forceSelection="false">
+                    <items>
+                        <core:Item id="classItem" key="{class}" text="{class} - {classDesc}"></core:Item>
+                    </items>
+                </Select>
+                <Button id="addClass" icon="sap-icon://add" class="sapUiTinyMargin" press="onAddNewClass"></Button>
+                <Button id="removeClass" icon="sap-icon://delete" press="onDeleteClassButtonClick" visible="false"></Button>
+                </HBox>
+                </VBox>
+            </HBox>
+            </VBox>
+
+            <Table id="classTable">
+                <headerToolbar>
+                    <OverflowToolbar id="classToolbar" >
+                        <ToolbarSpacer id="test"/>
+                        <SearchField id="searchClass" width="200px"></SearchField>
+                        <!-- <Button id="addCharData" icon="sap-icon://add" press="onAddRow" enabled="false"></Button> -->
+                        <Button id="saveCharData" icon="sap-icon://save" press="onSavePressed" enabled="true"></Button>
+                        <!-- <Button id="undoCharData" icon="sap-icon://undo" press="onUndoPressed" enabled="false"></Button>
+                        <Button id="deleteCharData" icon="sap-icon://delete" press="onDeletePress" enabled="false"></Button> -->
+                    </OverflowToolbar>
+                </headerToolbar>
+                <columns>
+                <Column id="recordIdCol">
+                        <Text id="recordIdColText" text="{i18n>charId}"></Text>
+                    </Column>
+                    <Column id="processUnitCol">
+                        <Text id="processUnitColText" text="{i18n>charValue}"></Text>
+                    </Column>
+                    <Column id="processUnitDescCol">
+                        <Text id="processUnitDescColText" text="{i18n>charUom}"></Text>
+                    </Column>
+                </columns>
+
+            </Table>
+    </Panel>
+    </Page>
+</mvc:View>
